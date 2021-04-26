@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Paksoi Online</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .bottom {
+        bottom: 0!important;
+      }
+      
+      .left {
+        left: 0!important;
+      }
+      
+      .right {
+        right: 0!important;
+      }
+      
+      .absolute {
+        position: absolute!important;
+      }
+
+      .align-center {
+        text-align: center!important;
+      }
+
+      .mb18 {
+        margin-bottom: 18px!important;
+      }
+
+      .btn-round {
+        height: 35px;
+        color:whitesmoke;
+        background-color:darkred;
+        font-size: 12pt;
+        cursor: pointer;
+        padding: 6.4px 20px;
+        font-size: 16px;
+        border-radius: 20px;
+        z-index: 999;
+      }
+
+      .shadow-darken25 {
+        box-shadow: 0 0 10px 2px rgba(31,51,73,.25)!important;
+      }
+
+      h2#p_title {
+        font-size: 18px;
+      }
+
+    </style>
+  </head>
+  <body>
+<!-- 
+    <div id="search" class="absolute bottom right left mb18" style="z-index: 9999">
+      <input id="txt_search" type="text" placeholder="ค้นหา">
+    </div>
+-->
+    <div id="map"></div>
+    <div class="absolute bottom right left align-center mb18">
+      <button class="btn-round shadow-darken25" onclick="getLocation()">ค้นหาร้านใกล้ฉัน</button>
+    </div>
+    <script>
+        
+      var map;
+      var zoomLevel = 7;
+      var home = { lat: 13.7245601, lng: 100.4930247 }; // default bangkok
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: home,
+          zoom: zoomLevel,
+          zoomControl: true,
+          scaleControl: true,
+          fullscreenControl: false
+        });
+      }
+
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+              zoomLevel = 16;
+              home = { lat: position.coords.latitude, lng: position.coords.longitude };
+              console.log("lat: " + home.lat + ", lng: " + home.lng);
+              setTimeout(initMap(), 500);
+              
+              var marker = new google.maps.Marker({
+                position: home,
+                map: map,
+                title: 'You are here',
+                draggable: true,
+                // icon: 'https://developers.google.com/maps/images/maps-icon.svg',
+                icon: new google.maps.MarkerImage('img/pin-home-redpink.svg', null, null, null, new google.maps.Size(48, 48)),
+                animation: google.maps.Animation.BOUNCE
+              });
+
+              pinShops();
+            },
+            function(posError) {
+              console.error(posError);
+              // alert(posError);
+            }
+          );
+        } else {
+          console.log("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function pinShops() {
+        var shops = [
+          { category: 'F', type: 'B', position: { lat: 13.51403, lng: 99.944474 }, title: 'ส้มตำบ้านสวน', tel: '089 113 3154', fb: 'https://m.me/1704358309791268', line: 'https://line.me/ti/p/y8gCTUfOAd', open: 'เปิดบริการทุกวัน เวลา 9.30-17.00น.', detail: 'ส้มตำอร่อยมาก', maps: 'https://goo.gl/maps/uTf2jDk3xt6AUApB6'},
+          { category: 'F', type: 'D', position: { lat: 13.521511, lng: 99.965059 }, title: 'ส้มตำย่าขา', tel: '089 913 7745', maps: 'https://goo.gl/maps/yuyZ2KbmRbDUh7J76' },
+          { category: 'B', type: '-', position: { lat: 13.518056, lng: 99.953528 }, title: 'ร้านโย่ง บาร์เบอร์', tel: '086 002 3272', maps: 'https://maps.app.goo.gl/yo5Nn8i8MzNiL3Pk6' },
+          { category: 'F', type: 'T', position: { lat: 13.516737, lng: 99.952000 }, title: 'ร้านเฮียเข อาหารตามสั่ง', tel: '094 347 9490' },
+          { category: 'C', type: 'B', position: { lat: 13.530860, lng: 99.946921 }, title: 'โคโค่คอฟฟี่ Coco Coffee', tel: '081 778 4754', fb: 'https://m.me/CocoCoffeeDamnoensaduak', maps: 'https://goo.gl/maps/MkUGBsCH7cJudHnL7' },
+          { category: 'C', type: 'D', position: { lat: 13.519832, lng: 99.96068 }, title: 'The Peace Cafe x Hostel', tel: '082 826 4695', fb: 'https://m.me/thepeacecafexhostel', maps: 'https://goo.gl/maps/GECcVHoCL6tBimZ4A' },
+          { category: 'F', type: 'D', position: { lat: 13.51989, lng: 99.95081 }, title: 'B​ บุญ​ล้อม​ก๋วยเตี๋ยว​ลง​สวน​', tel: '081 932 7461', maps: 'https://goo.gl/maps/H3ab4j8jWVxLczFbA' },
+          { category: 'C', type: 'D', position: { lat: 13.499483, lng: 99.940575 }, title: 'Bamboo The Coffee Parlour', tel: '098-765-4321' },
+          { category: 'F', type: 'D', position: { lat: 13.515153, lng: 99.951543 }, title: 'ร้านข้าวมันไก่ไหหลำ เจ๊ยอง', tel: '098-765-4321' },
+          { category: 'F', type: 'D', position: { lat: 13.517824, lng: 99.953683 }, title: 'ก๋วยเตี๋ยวหมูน้ำแดง', tel: '098-765-4321' },
+          { category: 'C', type: 'D', position: { lat: 13.541078, lng: 99.964172 }, title: 'idyll coffee', tel: '098-765-4321' },
+          { category: 'C', type: 'D', position: { lat: 13.539581, lng: 99.965501 }, title: 'Tree Shade', tel: '098-765-4321' },
+          { category: 'C', type: 'D', position: { lat: 13.558011, lng: 99.968313 }, title: 'Take A Break', tel: '098-765-4321' },
+          { category: 'C', type: 'D', position: { lat: 13.489862, lng: 99.973928 }, title: 'ภพรักกาแฟ', tel: '098-765-4321' }, 
+          { category: 'W', type: 'B', position: { lat: 13.517194, lng: 99.953778 }, title: 'วินข้างวัดโชติ', tel: '098-765-4321', maps: 'https://goo.gl/maps/ZDyAguNcRLCDbYUD9' }, 
+          { category: 'W', type: 'B', position: { lat: 13.520140, lng: 99.959755 }, title: 'วินตลาดน้ำ', tel: '098-765-4321' }, 
+          { category: 'W', type: 'T', position: { lat: 13.529834, lng: 99.968079 }, title: 'วินสามล้อ หน้าการประปาดำเนินฯ', tel: '098-765-4321' }, 
+          { category: 'S', type: 'R', position: { lat: 13.517372, lng: 99.951281 }, title: 'ร้านเจ๊แหม่ม', tel: '087 405 0596', fb: 'http://m.me/junlapong.lee' }, 
+          { category: 'A', type: 'B', position: { lat: 13.515528, lng: 99.972361 }, title: 'ขุมทรัพย์การเกษตร', tel: '081 017 5564', fb: 'https://m.me/2302103016674867', maps: 'https://goo.gl/maps/QYCoLEFGudbofMZd8', detail: 'จำหน่าย ปุ๋ยยา เคมีชีวภาพ ปลีก-ส่ง<br>สั่งออนไลน์ บริการส่ง Kerry Express' },
+          { category: 'F', type: 'D', position: { lat: 13.9371751, lng: 100.6843421 }, title: 'สเต็กเด็กแนวตลาดโต้รุ่งต้นซอย', tel: '095 893 5555', fb: 'https://m.me/nirun.keeratikornpisut', line: 'https://line.me/ti/p/0TqFj1Ym8y', maps: 'https://goo.gl/maps/zAPz4tsvDExjLR3g7', detail: 'เผื่อใครอยู่บ้านอยากทานสเต็กสั่งได้เลยครับ​<br>ภายในชุดสเต็กจะมีสลัดผัก เฟรนฟราย​และขนมปังอยู่ในชุด​<br>*** บริการส่งฟรี ในระยะ 2.5 กม. ***<br><br><a href="https://i.ibb.co/3NjhKTL/jo-steak.jpg" target="p_menu">ดูเมนู</a>', open: 'รับออเดอร์​รอบเช้า​ 09.00 - ​11.00 ส่ง​ 11.30<br>รับออเดอร์​รอบบ่าย​ 13.00 - ​16.00​ ส่ง​ 16.30<br>หรือแจ้งเวลาส่งได้​โดยสั่งล่วงหน้า​ 1 ชม.' },
+          { category: 'F', type: 'T', position: { lat: 13.652714, lng: 100.615673 }, title: 'ไก่ทอด 5 ดาว FIVE STAR (ข้างโลตัส)', tel: '087 066 7769', maps: 'https://maps.app.goo.gl/baK6Taz3Kmxby6Z69', detail: '', open: 'ทุกวัน 10.30–19:00' },
+          { category: 'F', type: 'T', position: { lat: 13.645366, lng: 100.610839 }, title: 'เล่า ลือ เย็นตาโฟ', tel: '098 765 4321', maps: 'https://maps.app.goo.gl/ue7ZtrCyffsrhRzV6', detail: 'เย็นตาโฟรสเด็ด', open: 'ทุกวัน 08.30–16:00' },
+          { category: 'F', type: 'T', position: { lat: 13.646136, lng: 100.611254 }, title: 'บ้านขนมจีบ ซาลาเปา กัญญาเฮ้าส์', tel: '086 264 2210', maps: 'https://maps.app.goo.gl/SWwwiG46LA2QkCfk6', detail: 'ขนมจีบ ซาลาเปา', open: 'ทุกวัน 06.30–12:00' },
+          { category: 'F', type: 'T', position: { lat: 13.651712, lng: 100.614803 }, title: 'ข้าวแกงปักษ์ใต้', tel: '098 765 4321', maps: 'https://maps.app.goo.gl/qi8gnQA1ZtXQqxQ57', detail: 'ข้าวแกงปักษ์ใต้', open: 'ทุกวัน 08.30–17:00' },
+          { category: 'F', type: 'T', position: { lat: 13.651506, lng: 100.614873 }, title: 'คุณผึ้งอาหารตามสั่ง', tel: '089 985 0643', maps: 'https://maps.app.goo.gl/TVdZKQ5Q7M2FAphG6', detail: 'อาหารตามสั่ง ราคาย่อมเยา', open: 'ทุกวัน 09.30–19:30' },
+          { category: 'F', type: 'T', position: { lat: 13.650980, lng: 100.614513 }, title: 'ป้าจบอาหารตามสั่ง', tel: '080 107 4621', maps: 'https://maps.app.goo.gl/wSNxa6wbfBXUPkCv5', detail: 'อาหารตามสั่ง ราคาย่อมเยา', open: 'ทุกวัน 08.00–17:00' },
+          { category: 'C', type: 'T', position: { lat: 13.65026, lng:  100.622947 }, title: 'Buna Organic Coffee', tel: '084 955 3933', maps: 'https://goo.gl/maps/vnpUBAucx2eYxMD36', detail: 'ร้านกาแฟ ออแกนิค ในร้าน บรรยากาศสวน', open: 'ทุกวัน 08.00–20:00' },
+          // { category: 'F', type: 'D', position: { lat: , lng:  }, title: '', tel: '', maps: '', detail: '', open: 'ทุกวัน 10.30–19:00' },
+
+          // https://www.google.com/maps/@13.650972,100.614528,16z?hl=th
+        ];
+
+        for (var i = 0; i < shops.length; i++) {
+          // console.log(shops[i].title);
+          markPin(shops[i]);
+        }
+      }
+
+      function markPin(shop) {
+        var marker = new google.maps.Marker({
+          position: shop.position,
+          map: map,
+          title: shop.title
+        });
+
+        pinPopup(marker, shop);
+      }
+
+      function pinPopup(marker, shop) {
+        var p_detail = (shop.detail == undefined) ? '-' : shop.detail;
+        var p_open   = (shop.open   == undefined) ? '-' : shop.open;
+        var p_fb     = (shop.fb     == undefined) ? ''  : shop.fb;
+        var p_line   = (shop.line   == undefined) ? ''  : shop.line;
+        var p_maps   = (shop.maps   == undefined) ? ''  : shop.maps;
+
+        var contentString = '<div id="p_content">'+
+            '<h2 id="p_title">' + shop.title + '</h2>'+
+            '<div id="bodyContent">' +
+            '<p>' + p_detail + '</p>' +
+            '<p>เปิด:<br>' + p_open + '</p>' +
+            '<p>Tel: <a href="tel:' + shop.tel + '" target="p_tel">' + shop.tel + '</a><br>';
+
+        if (p_fb != '') {
+          contentString += 'FB: <a href="' + p_fb + '" target="p_fb">Messenger</a><br>';
+        }
+        if (p_line != '') {
+          contentString += 'Line: <a href="' + p_line + '" target="p_line">Add LINE</a></p>';
+        }
+        if (p_maps != '') {
+          contentString += '<p><a href="' + p_maps + '" target="p_maps">เปิดแผนที่</a> | ';
+        }
+
+        contentString += '<a href="#">เพิ่มเติม</a></p>' + 
+            '</div>'+
+            '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString,
+          maxWidth: 300
+        });
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+      }
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQp5ROwJmD78Ze0FNyrGKIkCG5MTWw140&callback=initMap"
+            async defer></script>
+    <!-- <img src="https://paksoi.ccstoreadmin.com/ua/"> -->
+
+  </body>
+</html>
